@@ -1,0 +1,8 @@
+#!/bin/sh
+# Specify the shell to use for executing this script
+
+# Retrieve the current time using the `date` command and format it as `HH:MM`
+current_time=$(date +%R)
+
+# Display a message to the user that includes the prayer hands emoji and the current time
+echo " $current_time"

@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# Define the power menu options
+options=("󰐥 Shutdown" " Reboot" "󰏤 Suspend" " Lock screen")
+
+# Display the power menu using the 'dmenu' utility and save the selected option in the 'selected' variable
+selected=$(printf "%s\n" "${options[@]}" | dmenu -i -l 4 -p "Power menu:")
+
+# If a power menu option is selected, display a confirmation dialog
+if [[ ! -z $selected ]]; then
+
+  # Display a Yes/No dialog using the 'dmenu' utility and save the selected option in the 'answer' variable
+  answer="$(echo -e "Yes\nNo" | dmenu -i -l 2 -p "Confirm:")"
+
+  # If the user confirms the action, perform the selected power menu action
+  if [ "$answer" = "Yes" ]; then
+    case "$selected" in
+      "󰐥 Shutdown") loginctl poweroff ;;    # Shutdown the system
+      " Reboot") loginctl reboot ;;         # Reboot the system
+      "󰏤 Suspend") loginctl suspend ;;      # Suspend the system
+      " Lock screen") slock ;;              # Lock the screen
+    esac
+  fi
+fi

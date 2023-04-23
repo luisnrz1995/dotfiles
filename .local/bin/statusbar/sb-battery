@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# Retrieve the current status of the battery (Charging, Discharging, Full)
+status=$(cat /sys/class/power_supply/BAT0/status)
+
+# Retrieve the current battery capacity
+capacity=$(cat /sys/class/power_supply/BAT0/capacity)
+
+# Define a function called 'battery' to determine what icon to display
+battery() {
+  case $status in
+    "Charging"|"Full") echo " $capacity%";; # Display a charging icon or full battery icon
+    *) case $capacity in
+      9[5-9]|100) echo "  $capacity%";; # Display a full battery icon
+      6[0-9]|7[0-9]|8[0-9]|9[0-4]) echo "  $capacity%";; # Display a nearly full battery icon
+      3[5-9]|4[0-9]|5[0-9]) echo "  $capacity%";; # Display a partially full battery icon
+      1[0-9]|2[0-9]|3[0-4]) echo "  $capacity%";; # Display a low battery icon
+      *) echo "  $capacity%";; # Display an empty battery icon
+    esac;;
+  esac
+}
+
+# Print the output of the 'battery' function to the console
+echo "$(battery)"

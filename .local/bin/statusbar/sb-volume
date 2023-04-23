@@ -1,0 +1,12 @@
+#!/bin/bash
+# This is a bash script that displays the current volume level and mute status using fontawesome icons.
+
+# The following line uses the `pamixer` command to get the current mute status of the system.
+# The result is stored in the `mute` variable.
+if mute="$(pamixer --get-mute)" && [ "$mute" = "true" ]; then
+  # If the system is muted, the following line prints the mute icon () and the current volume level.
+  printf ' %s%%\n' "$(pamixer --get-volume)"
+else
+  # If the system is not muted, the following line prints the speaker icon () and the current volume level.
+  printf ' %s%%\n' "$(pamixer --get-volume)"
+fi

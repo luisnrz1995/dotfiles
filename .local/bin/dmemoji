@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Use sed to remove comments from the unicode file, pipe the output to dmenu for user selection,
+# and use sed again to extract only the selected emoji
+selected="$(sed 's/#.*//' ~/.scripts/unicode | dmenu -i -l 10 -p 'Emojis:' | sed 's/ .*//')"
+[[ -z "$selected" ]] && exit  # If no emoji was selected, exit the script
+
+if [[ -n "$1" ]]; then
+  # If the script is called with an argument, type the selected emoji using xdotool
+  xdotool type "$selected"
+else
+  # Otherwise, copy the selected emoji to the clipboard
+  # Use printf instead of echo to avoid interpreting escape sequences and to ensure that the emoji is copied without a trailing newline
+  # Use the -rmlastnl option to xclip to remove the trailing newline that may be added by printf
+  printf "%s" "$selected" | xclip -selection clipboard -rmlastnl
+  # Send a notification to confirm the copy
+  notify-send --expire-time=2000 "$selected has been copied to clipboard."
+fi

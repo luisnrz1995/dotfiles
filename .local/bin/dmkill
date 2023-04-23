@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# Selects the processes belonging to the current user and displays them using the dmenu command, allowing the user to select one to kill.
+selected="$(ps -a -u $USER | dmenu -i -l 10 -p "Kill:" | awk '{print $1" "$4}')"
+
+# Processes the selected option and prompts the user to confirm the action, only if an option was selected.
+if [ -n "$selected" ]; then
+  answer="$(echo -e "Yes\nNo" | dmenu -i -l 10 -p 'Confirm:')"
+  case "$answer" in
+    # If the user confirms, extracts the PID from the selected option and forcibly kills the process using the kill command.
+    "Yes") selpid="$(awk '{print $1}' <<< $selected)"; kill -9 "$selpid" ;;
+    # If the user cancels, exits the script with a status code of 0 (success).
+    *) exit 0;;
+  esac
+fi
+
+# Exits the script with a status code of 0 (success).
+exit 0
