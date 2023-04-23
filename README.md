@@ -26,11 +26,8 @@ of the user's home folder. Some examples of dotfiles are `.bashrc`, `.vimrc`, an
 ## Some useful scripts
 
 * `dmemoji`: Emoji selector using dmenu.
-
 * `dmkill`: Processes killes using dmenu.
-
 * `dmpower`: Power menu using dmenu.
-
 * `screenshot`: Script for taken screenshot using scrot.
 
 ## How to use these dotfiles
