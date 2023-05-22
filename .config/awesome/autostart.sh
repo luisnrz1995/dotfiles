@@ -1,5 +1,4 @@
 #!/bin/sh
-export PATH="$HOME/.local/bin:$PATH"
 setxkbmap latam
 touchpad_config -e 11
 xset r rate 300 50

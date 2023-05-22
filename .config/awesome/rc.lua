@@ -488,7 +488,7 @@ awful.rules.rules = {
     -- Floating clients.
     {
         rule_any = {
-            instance = { "DTA", "copyq", "pinentry" },
+            instance = { "DTA", "copyq", "pinentry", "Browser", "Places" },
             class = { "Free Download Manager", "Gpick", "KeePassXC" },
             name = { "Event Tester" },
             role = { "AlarmWindow", "ConfigManager", "pop-up" }
@@ -514,6 +514,15 @@ awful.rules.rules = {
             awful.placement.centered(c, { honor_padding = true, honor_workarea = true })
             gears.timer.delayed_call(function() c.urgent = false end)
         end
+    },
+
+    {
+      rule = {
+        class = "firefox"
+      },
+      properties = {
+        tiled = true
+      }
     },
 }
 -- }}}

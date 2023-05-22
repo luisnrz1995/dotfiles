@@ -1,53 +1,57 @@
 local client = client
 local awful = require("awful")
+local util = require("awful.util")
 
 local scratch = {}
 local defaultRule = {instance = "scratch"}
 
-local function manipulateTags(c, action)
-    local currentTag = awful.tag.selected(c.screen)
-    local ctags = {currentTag}
-    for _, tag in pairs(c:tags()) do
-        if tag ~= currentTag then
-            table.insert(ctags, tag)
-        end
+-- Turn on this scratch window client (add current tag to window's tags,
+-- then set focus to the window)
+local function turn_on(c)
+    local current_tag = awful.tag.selected(c.screen)
+    ctags = {current_tag}
+    for k,tag in pairs(c:tags()) do
+        if tag ~= current_tag then table.insert(ctags, tag) end
     end
     c:tags(ctags)
-    if action == "on" then
-        c:raise()
-        client.focus = c
+    c:raise()
+    client.focus = c
+end
+
+-- Turn off this scratch window client (remove current tag from window's tags)
+local function turn_off(c)
+    local current_tag = awful.tag.selected(c.screen)
+    local ctags = {}
+    for k,tag in pairs(c:tags()) do
+        if tag ~= current_tag then table.insert(ctags, tag) end
     end
-end
-
-local function turnOn(c)
-    manipulateTags(c, "on")
-end
-
-local function turnOff(c)
-    manipulateTags(c, "off")
+    c:tags(ctags)
 end
 
 function scratch.raise(cmd, rule)
     local rule = rule or defaultRule
-    local matcher = function(c) return awful.rules.match(c, rule) end
+    local function matcher(c) return awful.rules.match(c, rule) end
 
+    -- logic mostly copied form awful.client.run_or_raise, except we don't want
+    -- to change to or merge with scratchpad tag, just show the window
     local clients = client.get()
-    local findex = awful.util.table.hasitem(clients, client.focus) or 1
-    local start = awful.util.cycle(#clients, findex + 1)
+    local findex  = util.table.hasitem(clients, client.focus) or 1
+    local start   = util.cycle(#clients, findex + 1)
 
     for c in awful.client.iterate(matcher, start) do
-        turnOn(c)
+        turn_on(c)
         return
     end
 
-    awful.spawn(cmd)
+    -- client not found, spawn it
+    util.spawn(cmd)
 end
 
-function scratch.toggle(cmd, rule, alwaysClose)
+function scratch.toggle(cmd, rule, alwaysclose)
     local rule = rule or defaultRule
 
     if client.focus and awful.rules.match(client.focus, rule) then
-        turnOff(client.focus)
+        turn_off(client.focus)
     else
         scratch.raise(cmd, rule)
     end
