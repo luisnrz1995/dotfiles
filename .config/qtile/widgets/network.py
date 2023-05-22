@@ -5,13 +5,13 @@ import subprocess
 def network():
     try:
         # Check Ethernet connection state
-        eth0_state = subprocess.check_output(['cat', '/sys/class/net/eth0/operstate']).decode().strip()
-        
+        wired = subprocess.check_output(['cat', '/sys/class/net/enp2s0/operstate']).decode().strip()
+
         # Check WLAN connection state
-        wlan0_state = subprocess.check_output(['cat', '/sys/class/net/wlan0/operstate']).decode().strip()
-        
+        wireless = subprocess.check_output(['cat', '/sys/class/net/wlp3s0/operstate']).decode().strip()
+
         # Use match case to check the network state
-        match (eth0_state, wlan0_state):
+        match (wired, wireless):
             case ("up", _):
                 # Return "Online" if Ethernet is up
                 return " Online"
