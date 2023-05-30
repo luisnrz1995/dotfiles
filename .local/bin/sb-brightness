@@ -7,10 +7,10 @@ brightness() {
 
   # Determine the appropriate string to output based on the brightness level.
   case $level in
-    7[5-9]|8[0-9]|9[0-9]|100) echo " $level%";;
-    5[0-9]|6[0-9]|7[0-4]) echo " $level%";;
-    2[5-9]|3[0-9]|4[0-9]) echo " $level%";;
-    *) echo " $level%";;
+    7[5-9]|8[0-9]|9[0-9]|100) echo "󰃠 $level%";;
+    5[0-9]|6[0-9]|7[0-4]) echo "󰃟 $level%";;
+    2[5-9]|3[0-9]|4[0-9]) echo "󰃝 $level%";;
+    *) echo "󰃞 $level%";;
   esac
 }
 

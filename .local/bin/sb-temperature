@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Check if the 'sensors' command is installed
+if ! command -v sensors &> /dev/null; then
+    echo "The 'sensors' command is not installed. Please install it to continue."
+    exit 1
+fi
+
+# Get the CPU temperature
+temperature=$(sensors | grep "Package id 0" | awk '{print $4}')
+
+# Extract only the numeric value from the temperature
+temperature=${temperature//[!0-9.]/}
+
+echo " $temperature °C"

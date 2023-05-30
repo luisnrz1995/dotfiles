@@ -39,8 +39,15 @@ do
 end
 -- }}}
 
--- Autostart
-awful.spawn.with_shell("sh -c ~/.config/awesome/autostart.sh")
+-- {{{ Function to toggle sticky
+function toggle_sticky()
+    local c = client.focus
+    if c then
+        c.sticky = not c.sticky
+        c:emit_signal("property::sticky")
+    end
+end
+---}}}
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
@@ -124,30 +131,87 @@ awful.screen.connect_for_each_screen(function(s)
     s.mytaglist = awful.widget.taglist {
         screen  = s,
         filter  = awful.widget.taglist.filter.noempty,
+        buttons = {
+            awful.button({ }, 1, function(t) t:view_only() end),
+            awful.button({ modkey }, 1, function(t)
+                                            if client.focus then
+                                                client.focus:move_to_tag(t)
+                                            end
+                                        end),
+            awful.button({ }, 3, awful.tag.viewtoggle),
+            awful.button({ modkey }, 3, function(t)
+                                            if client.focus then
+                                                client.focus:toggle_tag(t)
+                                            end
+                                        end),
+            awful.button({ }, 4, function(t) awful.tag.viewprev(t.screen) end),
+            awful.button({ }, 5, function(t) awful.tag.viewnext(t.screen) end),
+        }
     }
 
     -- Create a tasklist widget
     s.mytasklist = awful.widget.tasklist {
         screen  = s,
-        filter  = awful.widget.tasklist.filter.focused,
+        filter  = awful.widget.tasklist.filter.focused
     }
     beautiful.tasklist_plain_task_name = true
     beautiful.tasklist_disable_icon = true
 
     -- Network
-    local network = awful.widget.watch('sb-network', 1)
+    local network = awful.widget.watch(
+        'sh -c "sb-network"', 1,
+        function(widget, stdout)
+         widget:set_text(stdout)
+        end
+    )
 
     -- Battery
-    local battery = awful.widget.watch('sb-battery', 1)
+    local battery = awful.widget.watch(
+        'sh -c "sb-battery"', 1,
+        function(widget, stdout)
+            widget:set_text(stdout)
+        end
+    )
+
+    -- CPU
+    local cpu = awful.widget.watch(
+        'sh -c "sb-cpu"', 1,
+        function(widget, stdout)
+            widget:set_text(stdout)
+        end
+    )
+
+    -- Temperature
+    local temperature = awful.widget.watch(
+        'sh -c "sb-temperature"', 1,
+        function(widget, stdout)
+            widget:set_text(stdout)
+        end
+    )
 
     -- Volume
-    local volume = awful.widget.watch('sb-volume', 0.001)
+    local volume = awful.widget.watch(
+        'sh -c "sb-volume"', 0.1,
+        function(widget, stdout)
+            widget:set_text(stdout)
+        end
+    )
 
     -- Brightness
-    local brightness = awful.widget.watch('sb-brightness', 0.001)
+    local brightness = awful.widget.watch(
+        'sh -c "sb-brightness"', 0.1,
+        function(widget, stdout)
+            widget:set_text(stdout)
+        end
+    )
 
     -- Clock
-    local clock = awful.widget.watch('sb-clock', 1)
+    local clock = awful.widget.watch(
+        'sh -c "sb-clock"', 1,
+        function(widget, stdout)
+            widget:set_text(stdout)
+        end
+    )
 
     -- Separator
     local separator = wibox.widget.textbox()
@@ -155,13 +219,13 @@ awful.screen.connect_for_each_screen(function(s)
 
     -- Systray
     local systray = wibox.widget.systray()
-    systray:set_base_size(15)
+    systray:set_base_size(16)
     beautiful.systray_icon_spacing = 4
     s.systray = wibox.widget.systray()
     s.systray.visible = false
 
     -- Create the wibox
-    s.mywibox = awful.wibar({ position = "top", screen = s, height = 20 })
+    s.mywibox = awful.wibar({ position = "top", screen = s, height = 19 })
 
     -- Add widgets to the wibox
     s.mywibox:setup {
@@ -178,12 +242,16 @@ awful.screen.connect_for_each_screen(function(s)
             wibox.container.margin(separator, 5,5,2,1),
             battery,
             wibox.container.margin(separator, 5,5,2,1),
+            cpu,
+            wibox.container.margin(separator, 5,5,2,1),
+            temperature,
+            wibox.container.margin(separator, 5,5,2,1),
             volume,
             wibox.container.margin(separator, 5,5,2,1),
             brightness,
             wibox.container.margin(separator, 5,5,2,1),
             clock,
-            wibox.container.margin(systray, 4.5,2,3,4),
+            wibox.container.margin(systray, 4,1,3,3),
         },
     }
 end)
@@ -198,7 +266,7 @@ root.buttons(gears.table.join(
 -- {{{ Key bindings
 globalkeys = gears.table.join(
     -- Show help
-    awful.key({ modkey }, "s",
+    awful.key({ modkey }, "'",
         hotkeys_popup.show_help, { description="show help", group="awesome" }
     ),
 
@@ -214,12 +282,12 @@ globalkeys = gears.table.join(
     ),
 
     -- Move between windows in current tag
-    awful.key({ modkey }, "j", function ()
+    awful.key({ modkey }, "l", function ()
             awful.client.focus.byidx( 1)
         end,
         { description = "focus next by index", group = "client" }
     ),
-    awful.key({ modkey }, "k", function ()
+    awful.key({ modkey }, "h", function ()
             awful.client.focus.byidx(-1)
         end,
         { description = "focus previous by index", group = "client" }
@@ -268,12 +336,12 @@ globalkeys = gears.table.join(
     ),
 
     -- Changing layouts behavior
-    awful.key({ modkey   }, "d", function ()
+    awful.key({ modkey   }, "i", function ()
             awful.tag.incnmaster( 1, nil, true)
         end,
         { description = "increase the number of master clients", group = "layout" }
     ),
-    awful.key({ modkey   }, "i", function ()
+    awful.key({ modkey   }, "d", function ()
             awful.tag.incnmaster(-1, nil, true)
         end,
         { description = "decrease the number of master clients", group = "layout" }
@@ -435,10 +503,23 @@ clientkeys = gears.table.join(
         end,
         { description = "close", group = "client" }
     ),
-    
-    awful.key({ modkey, "Shift" }, "f", 
+
+    awful.key({ modkey, "Shift" }, "f",
         awful.client.floating.toggle, { description = "toggle floating", group = "toggle" }
+    ),
+
+    awful.key({ modkey, "Control" }, "f", function(c)
+            c.fullscreen = not c.fullscreen; c:raise()
+        end,
+        { description = "toggle fullscreen", group = "client" }
+    ),
+
+    awful.key({ modkey }, "s", function()
+            toggle_sticky()
+        end,
+        {description = "Toggle Sticky", group = "client"}
     )
+
 )
 
 -- Bind all key numbers to tags.
@@ -481,24 +562,24 @@ awful.rules.rules = {
             keys = clientkeys,
             buttons = clientbuttons,
             screen = awful.screen.preferred,
-            placement = awful.placement.no_overlap+awful.placement.no_offscreen+awful.placement.centered
+            placement = awful.placement.no_overlap+awful.placement.centered
         }
     },
 
     -- Floating clients.
     {
         rule_any = {
-            instance = { "DTA", "copyq", "pinentry", "Browser", "Places" },
-            class = { "Free Download Manager", "Gpick", "KeePassXC" },
+            instance = { "DTA", "copyq", "pinentry", "Browser", "Places"},
+            class = { "Free Download Manager", "Gpick", "KeePassXC", "Connman-gtk" },
             name = { "Event Tester" },
             role = { "AlarmWindow", "ConfigManager", "pop-up" }
         },
-        properties = { floating = true }
+        properties = { floating = true, placement = awful.placement.centered }
     },
 
     {
         rule_any = {
-            instance = { "spterm", "sphtop", "spranger" },
+            instance = { "spterm", "sphtop", "spranger", },
             class = { "spterm", "sphtop", "spranger" }
         },
         properties = {
@@ -516,14 +597,16 @@ awful.rules.rules = {
         end
     },
 
+    -- Fix Firefox does not tiled.
     {
-      rule = {
-        class = "firefox"
-      },
-      properties = {
-        tiled = true
-      }
+      rule = { class = "firefox" },
+      properties = { tiled = true }
     },
+
+    {
+      rule = { instance = "Toolkit" },
+      properties = { sticky = true, focus = false, placement = awful.placement.no_offscreen }
+    } 
 }
 -- }}}
 
@@ -548,3 +631,6 @@ end)
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
+
+-- Autostart.
+awful.spawn.with_shell("~/.config/awesome/autostart.sh")

@@ -4,9 +4,9 @@
 network() {
   # use the "ip link show" command to list all network interfaces and find those that are "state UP" (i.e. active and connected)
   case $(ip link show | grep "state UP") in
-    *"eth0"*) echo " Online";; # if eth0 is found, print "Online" with the Ethernet icon
-    *"wlan0"*) echo "直 Online";; # if wlan0 is found, print "Online" with the Wi-Fi icon
-    *) echo " Offline";; # if neither eth0 nor wlan0 is found, print "Offline" with a generic icon
+    *"eth0"*) echo "󰈀 Online";; # if eth0 is found, print "Online" with the Ethernet icon
+    *"wlan0"*) echo "󰖩 Online";; # if wlan0 is found, print "Online" with the Wi-Fi icon
+    *) echo "󰀝 Offline";; # if neither eth0 nor wlan0 is found, print "Offline" with a generic icon
   esac # end of case statement
 }
 

@@ -7,10 +7,10 @@ local themes_path = gfs.get_themes_dir()
 
 local theme = {}
 
-theme.font = "Fira Code 9.5"
+theme.font = "Fira Code Nerd Font 9.5"
 theme.taglist_font = "FiraCode Nerd Font:size=9.5;0:antialias=true:autohint=true"
 
-theme.bg_normal     = "#282828"
+theme.bg_normal     = "#222222"
 theme.bg_focus      = "#434C5E"
 theme.bg_urgent     = "#EA6962"
 theme.bg_systray    = theme.bg_normal
@@ -26,7 +26,7 @@ theme.border_focus  = "#434C5E"
 theme.menu_height = dpi(15)
 theme.menu_width  = dpi(130)
 
-theme.wallpaper = "~/.local/share/backgrounds/003.jpg"
+theme.wallpaper = "~/.local/share/backgrounds/007.jpg"
 
 theme.icon_theme = nil
 

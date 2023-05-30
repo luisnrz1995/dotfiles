@@ -20,4 +20,4 @@ case "$1" in
 esac
 
 # Display a notification to indicate that a screenshot has been taken
-notify-send "󰹑  Screenshot taken"
+notify-send "󰹑  Screenshot taken" && paplay ~/.local/share/screenshot.mp3
