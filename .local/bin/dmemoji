@@ -1,0 +1,10 @@
+#!/bin/bash
+selected="$(sed 's/#.*//' ~/.scripts/unicode | dmenu -i -l 10 -p 'Emojis:' | sed 's/ .*//')"
+[[ -z "$selected" ]] && exit
+
+if [[ -n "$1" ]]; then
+  xdotool type "$selected"
+else
+  printf "%s" "$selected" | xclip -selection clipboard -rmlastnl
+  notify-send --expire-time=2000 "$selected has been copied to clipboard."
+fi

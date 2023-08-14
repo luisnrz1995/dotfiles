@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Set the path for saving the screenshots with the current date and time
+path=$HOME/Pictures/Screenshots/%F_%T.png
+
+# Use a switch-case statement to determine the type of screenshot to take
+case "$1" in 
+	"--select") 
+		# Take a screenshot of a selected area and freeze the screen
+		# Save the screenshot to the specified path and copy it to the clipboard as a PNG image
+		scrot --select --freeze "$path" -e 'xclip -selection clipboard -target image/png -i $f' || exit 0;;
+	"--window") 
+		# Take a screenshot of the active window
+		# Save the screenshot to the specified path and copy it to the clipboard as a PNG image
+		scrot --focused "$path" -e 'xclip -selection clipboard -target image/png -i $f' || exit 0;;
+	*) 
+		# Take a screenshot of the entire screen
+		# Save the screenshot to the specified path and copy it to the clipboard as a PNG image
+		scrot "$path" -e 'xclip -selection clipboard -target image/png -i $f' || exit 0;;
+esac
+
+# Display a notification to indicate that a screenshot has been taken
+notify-send "󰹑  Screenshot taken" # && paplay ~/.local/share/screenshot.mp3

@@ -1,0 +1,15 @@
+#!/bin/bash
+selected="$(ps -a -u $USER | dmenu -i -l 10 -p "Kill:" | awk '{print $1" "$4}')"
+
+if [ -n "$selected" ]; then
+  answer="$(echo -e "Yes\nNo" | dmenu -i -l 10 -p 'Confirm:')"
+  case "$answer" in
+  "Yes")
+    selpid="$(awk '{print $1}' <<<$selected)"
+    kill -9 "$selpid"
+    ;;
+  *) exit 0 ;;
+  esac
+fi
+
+exit 0

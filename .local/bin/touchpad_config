@@ -1,0 +1,60 @@
+#!/bin/sh
+# Show the help message
+show_help() {
+    echo "Usage: touchpad_config <options> [device_id(optional)]"
+    echo ""
+    echo "Options: (without brackets)"
+    echo "touchpad_config (-h, --help)                  shows this help message"
+    echo "touchpad_config (-l, --list)                  shows a list of input devices"
+    echo "touchpad_config (-e, --enable) [device_id]    enables tap to click and natural scrolling"
+    echo "touchpad_config (-d, --disable) [device_id]   disables tap to click and natural scrolling"
+    echo ""
+    echo "Note that the device_id is optional; program automatically searches for touchpad device if not provided."
+    echo "Use the -l or --list option to see available devices."
+    echo "When specifying a device, enter the device's id, or the full name as displayed in quotes."
+    echo ""
+    echo "Example:"
+    echo "        touchpad_config -e 12"
+}
+
+# Show the list of input devices
+show_device_list() {
+    xinput list | grep -i "pointer"
+}
+
+# Get the touchpad device ID
+get_touchpad_id() {
+    xinput list --name-only | grep -i "TouchPad" | xargs -I{} sh -c 'xinput list --id-only "{}" 2>/dev/null && exit 0; exit 1'
+}
+
+# Enable or disable tap to click and natural scrolling
+toggle_touchpad() {
+    local device_id="$1"
+    local enabled="$2"
+
+    [ -z "$device_id" ] && device_id=$(get_touchpad_id)
+    [ -z "$device_id" ] && {
+        echo "Could not find the touchpad device ID."
+        echo "Make sure the touchpad is connected and functioning properly."
+        exit 1
+    }
+
+    [ "$enabled" -eq 1 ] && echo "Enabling tap to click." || echo "Disabling tap to click."
+    xinput set-prop "$device_id" "libinput Tapping Enabled" "$enabled"
+
+    [ "$enabled" -eq 1 ] && echo "Enabling natural scrolling." || echo "Disabling natural scrolling."
+    xinput set-prop "$device_id" "libinput Natural Scrolling Enabled" "$enabled"
+}
+
+# Check the passed arguments to the script
+if [ $# -eq 0 ]; then
+    show_help
+elif [ $# -gt 0 ]; then
+    case $1 in
+    -h | --help) show_help ;;
+    -l | --list) show_device_list ;;
+    -e | --enable) toggle_touchpad "$2" 1 ;;
+    -d | --disable) toggle_touchpad "$2" 0 ;;
+    *) echo "Unrecognized option. Use '-h' or '--help' to see available options." ;;
+    esac
+fi

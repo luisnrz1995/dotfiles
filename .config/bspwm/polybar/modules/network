@@ -1,0 +1,23 @@
+#!/bin/bash
+
+network() {
+	local interface="$1"
+	local ip_address=""
+
+	if ip -4 addr show "$interface" >/dev/null 2>&1; then
+		ip_address=$(ip -4 addr show "$interface" | awk '/inet /{print $2}' | cut -d'/' -f1)
+		if [[ -n "$ip_address" ]]; then
+			case "$interface" in
+				enp2s0)
+					echo " 󰈀 $ip_address";;
+				wlp3s0)
+					echo "   $ip_address";;
+			esac
+		fi
+	else
+		echo " 󰀝 Offline"
+	fi
+}
+
+interface=$(ip link show | awk -F': ' '/state UP/{print $2}' | grep -E 'enp2s0|wlp3s0')
+network "$interface"

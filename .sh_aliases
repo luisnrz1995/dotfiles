@@ -1,0 +1,10 @@
+#!/bin/sh
+alias ls="lsd"
+alias hc="history -c"
+# alias clear="printf '\033c'"
+alias mkdir="mkdir -p"
+alias mpv="devour mpv"
+alias zathura="devour zathura"
+alias vimdir="~/.config/nvim"
+alias notes="cd ~/Documents/notes; vim index.norg"
+alias tree="gtree"

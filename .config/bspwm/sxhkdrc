@@ -1,0 +1,134 @@
+##########################
+# WM Independent Hotkeys #
+##########################
+
+# Terminal Emulator
+super + Return
+	alacritty --class=alacritty
+
+# Program Launcher
+super + p
+	dmenu_run -i -l 10 -p 'Run:'
+
+super + {b,f}
+	{firefox,pcmanfm}
+
+super + n
+	alacritty --class=alacritty --title=nvim -e nvim
+
+alt + shift + {e,k,x}
+	{dmemoji,dmkill,dmpower}
+
+# Take Screenshots
+Print
+	screenshot
+
+super + Print
+	screenshot --select
+
+alt + Print
+	screenshot --window
+
+# Volume Control
+XF86AudioMute
+	pamixer -t
+
+XF86AudioLowerVolume
+	pamixer -d 5
+
+XF86AudioRaiseVolume
+	pamixer -i 5
+
+# Brightness Control
+XF86MonBrightnessDown
+	brightnessctl set 5%-
+
+XF86MonBrightnessUp
+	brightnessctl set +5%
+
+# Lockscreen
+super + period
+	betterlockscreen -l dimblur
+
+##############################
+# bspwm Hotkeys              #
+##############################
+
+# Restart sxhkd
+super + Escape
+	pkill sxhkd && sxhkd -c $HOME/.config/bspwm/sxhkdrc
+
+# Quit/Restart bspwm
+super + ctrl + {q,r}
+	bspc {quit,wm -r}
+
+# Close and Kill
+super + {_,shift + }w
+	bspc node -{c,k}
+
+# Alternate between the tiled and monocle layout
+alt + m
+	bspc desktop -l next
+
+##############################
+# State/Flags                 #
+##############################
+
+# Set the window state
+alt + {t,f,shift + f}
+	bspc node -t {tiled,floating,fullscreen}
+
+# Set the node flags
+alt + {s}
+	bspc node -g {sticky}
+
+##############################
+# Focus/Swap                  #
+##############################
+
+# Focus the node in the given direction
+super + {_,shift + }{h,j,k,l}
+	bspc node -{f,s} {west,south,north,east}
+
+# Focus the next/previous window in the current desktop
+super + {_,shift + }space
+	bspc node -f {next,prev}.local.!hidden.window
+
+# Focus the next/previous desktop in the current monitor
+super + {left,right}
+	bspc desktop -f {prev,next}.local
+
+super + {Tab}
+	bspc {desktop} -f last
+
+# Focus or send to the given desktop
+super + {_,shift + }{1-9,0}
+	bspc {desktop -f,node -d} '^{1-9,10}'
+
+##############################
+# Preselect                   #
+##############################
+
+# Preselect the direction
+super + ctrl + {h,j,k,l}
+	bspc node -p {west,south,north,east}
+
+# Cancel the preselection for the focused node
+super + ctrl + x
+	bspc node -p cancel
+
+##############################
+# Move/Resize                 #
+##############################
+
+# Expand a window by moving one of its side outward
+super + alt + {h,j,k,l}
+	bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}
+
+# Contract a window by moving one of its side inward
+super + alt + shift + {h,j,k,l}
+	bspc node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}
+
+# Move a floating window
+super + {Left,Down,Up,Right}
+	bspc node -v {-5 0,0 3,0 -3,5 0}

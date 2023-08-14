@@ -1,0 +1,17 @@
+#!/bin/bash
+options=("󰐥 Shutdown" " Reboot" "󰏤 Suspend" " Lock screen")
+selected=$(printf "%s\n" "${options[@]}" | dmenu -i -l 4 -p "Power menu:")
+
+if [[ ! -z $selected ]]; then
+  answer="$(echo -e "Yes\nNo" | dmenu -i -l 2 -p "Confirm:")"
+
+  if [ "$answer" = "Yes" ]; then
+    case "$selected" in
+    "󰐥 Shutdown") poweroff ;;
+    " Reboot") reboot ;;
+    "󰏤 Suspend") suspend ;;
+    " Lock screen") slock ;;
+    esac
+  fi
+
+fi
